@@ -1,0 +1,33 @@
+# Local environment and secrets
+.env
+.env.*
+!.env.example
+.claude
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+.venv/
+venv/
+env/
+
+# Tooling and caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# OS/editor files
+.DS_Store
+.idea/
+.vscode/
+
+# Outreach data and run logs
+*.csv
+*.log
+
+# Personal attachments
+*.pdf
