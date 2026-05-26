@@ -9,6 +9,7 @@ A small, dependency-free Python CLI for personalized cold outreach. It reads a l
 - Reusable templates in `email_templates.py`
 - Environment-based sender configuration
 - Flexible CSV column names
+- Public email scraper for seed URLs
 - Optional attachment support
 - Local sent log and status tracker
 
@@ -171,3 +172,48 @@ I came across {company} and was interested in {focus_area}.
 ```
 
 Any CSV column can be referenced by name, and missing fields render as empty strings.
+
+## Scraping Contacts
+
+Use `scraper.py` to collect public email addresses from seed URLs into `contacts.csv`. Pass the user's target request so the scraper can filter page context and write better personalization:
+
+```sh
+python scraper.py --request "AI founders in NYC" --target-role founder --url https://example.com --output contacts.csv
+```
+
+Scrape multiple seed URLs from a local text file:
+
+```sh
+python scraper.py --request "developer tool founders" --target-role founder --urls-file seeds.txt --output contacts.csv --append --crawl-pages 5
+```
+
+Each seed URL is fetched with a delay, same-domain crawling is limited by `--crawl-pages`, robots.txt is checked by default, and email domains must match the seed domain by default.
+
+Useful options:
+
+```sh
+python scraper.py --url https://example.com/contact --company "Example Inc" --company-description "Developer tooling company"
+python scraper.py --urls-file seeds.txt --delay 2 --timeout 20
+python scraper.py --url https://example.com/team --infer-from-format --target-role founder
+```
+
+By default, the scraper only writes emails it finds publicly in page text or `mailto:` links. With `--infer-from-format`, it may infer named emails when both conditions are true:
+
+- A public email format is visible on the same domain, such as `first.last@example.com`.
+- A matching person and role are found on the crawled page.
+
+Inferred rows are marked in the `source` column and should be reviewed before sending. Use `--no-verify-domain` only when you intentionally want to keep emails from domains other than the seed URL's domain.
+
+The scraper writes the standard contact columns:
+
+```csv
+name,email,company,role,company_description,personalization,source
+```
+
+The `personalization` field is generated from the request, company context, role, and source page. Example:
+
+```text
+I found Example Inc while researching developer tool founders, and your Founder work looked relevant.
+```
+
+For agent-assisted research, see `AGENTS.md`. It defines the workflow for Codex, Claude, and similar coding agents to gather public sources, populate `contacts.csv`, and avoid committing private campaign data.

@@ -28,6 +28,8 @@ htmlcov/
 # Outreach data and run logs
 *.csv
 *.log
+seeds.txt
+seed_urls.txt
 
 # Personal attachments
 *.pdf
