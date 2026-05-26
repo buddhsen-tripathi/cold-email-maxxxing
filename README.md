@@ -20,6 +20,38 @@ A small, dependency-free Python CLI for personalized cold outreach. It reads a l
 
 No third-party Python packages are required.
 
+## Quickstart
+
+Start by collecting public leads into a local `contacts.csv`:
+
+```sh
+python scraper.py \
+  --request "AI founders in NYC" \
+  --target-role founder \
+  --urls-file seeds.txt \
+  --output contacts.csv \
+  --append \
+  --crawl-pages 5
+```
+
+Preview the generated outreach before sending:
+
+```sh
+python send_emails.py --dry-run --csv contacts.csv --limit 5
+```
+
+Send only after the preview looks right:
+
+```sh
+python send_emails.py --send --csv contacts.csv --limit 20 --delay 45
+```
+
+Track replies and bounces locally:
+
+```sh
+python check_status.py --tracker tracker.csv
+```
+
 ## Setup
 
 Clone the repo, then create your local environment file:
@@ -172,6 +204,21 @@ I came across {company} and was interested in {focus_area}.
 ```
 
 Any CSV column can be referenced by name, and missing fields render as empty strings.
+
+## Project Structure
+
+```text
+.
+|-- scraper.py           # Scrape public leads into contacts.csv
+|-- send_emails.py       # Preview and send personalized emails
+|-- check_status.py      # Local tracker for replies, bounces, and notes
+|-- email_templates.py   # Reusable email templates
+|-- config.py            # Environment-driven configuration
+|-- AGENTS.md            # Instructions for Codex, Claude, and similar agents
+|-- .env.example         # Local configuration template
+|-- README.md
+`-- LICENSE
+```
 
 ## Scraping Contacts
 
